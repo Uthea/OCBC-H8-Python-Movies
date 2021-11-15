@@ -1,16 +1,15 @@
 from flask import jsonify, make_response
 from flask_jwt_extended import create_access_token, create_refresh_token, decode_token
-from flask_jwt_extended.exceptions import JWTDecodeError
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from skeleton import db
-from skeleton.api_model import register_model, login_model, refresh_model
-from skeleton.model import User, TokenBlocklist
-from skeleton.pydantic_model import RegisterBodyModel, LoginBodyModel, RefreshBodyModel
+from skeleton.auth.api_model import register_model, login_model, refresh_model
+from skeleton.auth.model import User, TokenBlocklist
+from skeleton.auth.pydantic_model import RegisterBodyModel, LoginBodyModel, RefreshBodyModel
 
-api = Namespace('Auth', description='auth related operations', prefix='/auth')
+api = Namespace('Auth', description='auth related operations', path='/auth')
 
 
 # # Callback function to check if a JWT exists in the database blocklist

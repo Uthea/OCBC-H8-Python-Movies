@@ -4,9 +4,9 @@ from flask_pydantic import validate
 from flask_restx import Resource, Namespace
 
 from skeleton import db
-from skeleton.api_model import book_model, book_post_model
-from skeleton.model import Book
-from skeleton.pydantic_model import RequestBodyModel
+from skeleton.books.api_model import book_model, book_post_model
+from skeleton.books.model import Book
+from skeleton.books.pydantic_model import RequestBodyModel
 
 api = Namespace('Books', description='CRUD Books', path='/')
 

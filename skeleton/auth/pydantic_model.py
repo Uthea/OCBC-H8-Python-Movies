@@ -1,11 +1,6 @@
 from pydantic import BaseModel, EmailStr, constr
 
 
-class RequestBodyModel(BaseModel):
-    title: str
-    author: str
-
-
 class LoginBodyModel(BaseModel):
     email: EmailStr
     password: str
