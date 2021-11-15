@@ -10,7 +10,7 @@ from skeleton.api_model import register_model, login_model, refresh_model
 from skeleton.model import User, TokenBlocklist
 from skeleton.pydantic_model import RegisterBodyModel, LoginBodyModel, RefreshBodyModel
 
-api = Namespace('Auth', description='auth related operations', prefix='auth')
+api = Namespace('Auth', description='auth related operations', prefix='/auth')
 
 
 # # Callback function to check if a JWT exists in the database blocklist
@@ -70,18 +70,12 @@ class RefreshToken(Resource):
         access_token = body.access_token
         refresh_token = body.refresh_token
 
-        try:
-            decoded_refresh_token = decode_token(refresh_token)
-        except JWTDecodeError:
-            return make_response(jsonify(msg='Refresh Token Expired, please re-login'), 400)
+        decoded_refresh_token = decode_token(refresh_token)  # will return 401 if token expired
 
         identity = decoded_refresh_token['sub']
         jti = decoded_refresh_token['jti']
 
         revoked_jti = TokenBlocklist.query.filter_by(jti=jti).first()
-        print(jti)
-        print(f"revoked jti result : {revoked_jti}")
-
         if revoked_jti:
             return make_response(jsonify(msg='Refresh Token is revoked'), 400)
 
