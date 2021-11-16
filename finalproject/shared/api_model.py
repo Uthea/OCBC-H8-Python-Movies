@@ -1,4 +1,4 @@
-from skeleton import api
+from finalproject import api
 from flask_restx import fields
 
 director_request_model = api.model(

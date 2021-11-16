@@ -3,10 +3,10 @@ from flask_jwt_extended import jwt_required
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
 
-from skeleton import db
-from skeleton.shared.api_model import movie_response_model, movie_request_model
-from skeleton.movies.model import Movies
-from skeleton.movies.pydantic_model import MovieRequestModel
+from finalproject import db
+from finalproject.shared.api_model import movie_response_model, movie_request_model
+from finalproject.movies.model import Movies
+from finalproject.movies.pydantic_model import MovieRequestModel
 
 api = Namespace('Movies', description='CRUD Movies', path='/')
 

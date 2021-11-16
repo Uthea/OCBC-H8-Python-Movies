@@ -1,4 +1,4 @@
-from skeleton import db
+from finalproject import db
 
 
 class User(db.Model):

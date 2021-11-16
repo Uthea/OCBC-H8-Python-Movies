@@ -1,4 +1,4 @@
-from skeleton import api
+from finalproject import api
 from flask_restx import fields
 
 login_model = api.model(

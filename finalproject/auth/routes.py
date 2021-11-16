@@ -4,10 +4,10 @@ from flask_pydantic import validate
 from flask_restx import Resource, Namespace
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from skeleton import db
-from skeleton.auth.api_model import register_model, login_model, refresh_model
-from skeleton.auth.model import User, Tokenlist
-from skeleton.auth.pydantic_model import RegisterBodyModel, LoginBodyModel, RefreshBodyModel
+from finalproject import db
+from finalproject.auth.api_model import register_model, login_model, refresh_model
+from finalproject.auth.model import User, Tokenlist
+from finalproject.auth.pydantic_model import RegisterBodyModel, LoginBodyModel, RefreshBodyModel
 
 api = Namespace('Auth', description='auth related operations', path='/auth')
 

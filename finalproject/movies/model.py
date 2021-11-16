@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey
 
-from skeleton import db, app
+from finalproject import db, app
 from sqlalchemy.orm import relationship
 
 

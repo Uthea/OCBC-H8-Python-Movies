@@ -3,10 +3,10 @@ from flask_jwt_extended import jwt_required
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
 
-from skeleton import db
-from skeleton.shared.api_model import director_request_model, director_response_model
-from skeleton.directors.model import Directors
-from skeleton.directors.pydantic_model import DirectorRequestModel
+from finalproject import db
+from finalproject.shared.api_model import director_request_model, director_response_model
+from finalproject.directors.model import Directors
+from finalproject.directors.pydantic_model import DirectorRequestModel
 
 api = Namespace('Directors', description='CRUD Directors', path='/')
 
