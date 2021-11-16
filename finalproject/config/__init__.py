@@ -18,3 +18,4 @@ class BaseConfig(object):
 class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL').replace("postgres", "postgresql")
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+    PROPAGATE_EXCEPTIONS = True
