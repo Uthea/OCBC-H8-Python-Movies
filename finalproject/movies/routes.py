@@ -2,6 +2,7 @@ from flask import jsonify, request, make_response
 from flask_jwt_extended import jwt_required
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
+from sqlalchemy.exc import IntegrityError
 
 from finalproject import db
 from finalproject.shared.api_model import movie_response_model, movie_request_model
@@ -26,6 +27,7 @@ class MoviesREST(Resource):
     @validate()
     @jwt_required()
     def post(self, body: MovieRequestModel):
+
         new_movie = Movies(
             original_title=body.original_title,
             budget=body.budget,
@@ -41,8 +43,11 @@ class MoviesREST(Resource):
             director_id=body.director_id
         )
 
-        db.session.add(new_movie)
-        db.session.commit()
+        try:
+            db.session.add(new_movie)
+            db.session.commit()
+        except IntegrityError:
+            return make_response(jsonify({'msg': f"Request Body contains invalid director_id"}), 400)
 
         return make_response(jsonify({'msg': f"New movie with id {new_movie.id} has been created"}), 201)
 
@@ -76,7 +81,10 @@ class MovieREST(Resource):
         movie_to_update.uid = body.uid
         movie_to_update.director_id = body.director_id
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return make_response(jsonify({'msg': f"Request Body contains invalid director_id"}), 400)
 
         return jsonify(msg='Update success')
 

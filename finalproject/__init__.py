@@ -1,11 +1,14 @@
 import os.path
+import os
 from datetime import timedelta
+
 
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from finalproject.config import BaseConfig, ProductionConfig
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 
@@ -19,13 +22,20 @@ authorizations = {
 }
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'final_proj_jwt.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
-app.config['JWT_TOKEN_LOCATION'] = ['headers']
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+print(f"ENV : {os.getenv('FLASK_ENV')}")
+if os.getenv('FLASK_ENV') == "production":
+    app.config.from_object(ProductionConfig())
+else:
+    app.config.from_object(BaseConfig())
+
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'final_proj_jwt.db')
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_ECHO'] = True
+# app.config['JWT_TOKEN_LOCATION'] = ['headers']
+# app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+# app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+# app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 jwt = JWTManager(app)
 api = Api(app, title="Movies API", authorizations=authorizations, security='Bearer')
