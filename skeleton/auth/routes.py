@@ -1,12 +1,12 @@
 from flask import jsonify, make_response
-from flask_jwt_extended import create_access_token, create_refresh_token, decode_token
+from flask_jwt_extended import create_access_token, create_refresh_token, decode_token, get_jti
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from skeleton import db
 from skeleton.auth.api_model import register_model, login_model, refresh_model
-from skeleton.auth.model import User, TokenBlocklist
+from skeleton.auth.model import User, Tokenlist
 from skeleton.auth.pydantic_model import RegisterBodyModel, LoginBodyModel, RefreshBodyModel
 
 api = Namespace('Auth', description='auth related operations', path='/auth')
@@ -36,6 +36,11 @@ class Login(Resource):
 
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
+        token = Tokenlist(jti=get_jti(access_token), refresh_token=refresh_token, used=False)
+
+        db.session.add(token)
+        db.session.commit()
+
         return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -69,20 +74,23 @@ class RefreshToken(Resource):
         access_token = body.access_token
         refresh_token = body.refresh_token
 
-        decoded_refresh_token = decode_token(refresh_token)  # will return 401 if token expired
+        decoded_access_token = decode_token(access_token)  # will return 401 if token expired
 
-        identity = decoded_refresh_token['sub']
-        jti = decoded_refresh_token['jti']
+        identity = decoded_access_token['sub']
+        jti = decoded_access_token['jti']
 
-        revoked_jti = TokenBlocklist.query.filter_by(jti=jti).first()
-        if revoked_jti:
-            return make_response(jsonify(msg='Refresh Token is revoked'), 400)
+        result = Tokenlist.query.filter_by(jti=jti).first()
+        if result and result.used:
+            return make_response(jsonify(msg='Refresh Token already used'), 400)
 
-        block_token = TokenBlocklist(jti=jti, refresh_token=refresh_token)
-        db.session.add(block_token)
-        db.session.commit()
+        result.used = True
 
         new_access_token = create_access_token(identity=identity)
         new_refresh_token = create_refresh_token(identity=identity)
+
+        token = Tokenlist(jti=get_jti(new_access_token), refresh_token=new_refresh_token, used=False)
+
+        db.session.add(token)
+        db.session.commit()
 
         return jsonify(access_token=new_access_token, refresh_token=new_refresh_token)

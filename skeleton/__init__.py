@@ -32,13 +32,11 @@ api = Api(app, title="Movies API", authorizations=authorizations, security='Bear
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from skeleton.books.routes import api as ns1
-from skeleton.auth.routes import api as ns2
-from skeleton.movies.routes import api as ns3
+from skeleton.auth.routes import api as ns1
+from skeleton.movies.routes import api as ns2
 
 api.add_namespace(ns1)
 api.add_namespace(ns2)
-api.add_namespace(ns3)
 
 if __name__ == '__main__':
     app.run(debug=True)
