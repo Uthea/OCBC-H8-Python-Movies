@@ -38,7 +38,7 @@ else:
 # app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 jwt = JWTManager(app)
-api = Api(app, title="Movies API", authorizations=authorizations, security='Bearer')
+api = Api(app, title="Movies API", authorizations=authorizations, security='Bearer', errors=Flask.errorhandler)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
