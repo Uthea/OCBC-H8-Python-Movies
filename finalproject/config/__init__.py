@@ -5,6 +5,14 @@ from os.path import dirname
 basedir = os.path.dirname(os.path.realpath(__file__))
 
 
+def get_db_url():
+    db_url = os.getenv('DATABASE_URL')
+    if db_url:
+        return db_url.replace("postgres", "postgresql")
+
+    return db_url
+
+
 class BaseConfig(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(dirname(basedir), 'final_proj_jwt.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -16,6 +24,6 @@ class BaseConfig(object):
 
 
 class ProductionConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL').replace("postgres", "postgresql")
+    SQLALCHEMY_DATABASE_URI = get_db_url()
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     PROPAGATE_EXCEPTIONS = True

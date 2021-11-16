@@ -11,7 +11,7 @@ from finalproject.directors.pydantic_model import DirectorRequestModel
 api = Namespace('Directors', description='CRUD Directors', path='/')
 
 
-@api.route('/director')
+@api.route('/directors')
 class DirectorsREST(Resource):
 
     @api.marshal_list_with(director_response_model, code=200)
@@ -40,7 +40,7 @@ class DirectorsREST(Resource):
         return make_response(jsonify({'msg': f"New director with id {new_director.id} has been created"}), 201)
 
 
-@api.route('/director/<int:id>')
+@api.route('/directors/<int:id>')
 class DirectorREST(Resource):
 
     # @api.marshal_with(movie_response_model, code=200)

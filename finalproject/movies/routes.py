@@ -12,7 +12,7 @@ from finalproject.movies.pydantic_model import MovieRequestModel
 api = Namespace('Movies', description='CRUD Movies', path='/')
 
 
-@api.route('/movie')
+@api.route('/movies')
 class MoviesREST(Resource):
 
     @api.marshal_list_with(movie_response_model, code=200)
@@ -52,7 +52,7 @@ class MoviesREST(Resource):
         return make_response(jsonify({'msg': f"New movie with id {new_movie.id} has been created"}), 201)
 
 
-@api.route('/movie/<int:id>')
+@api.route('/movies/<int:id>')
 class MovieREST(Resource):
 
     # @api.marshal_with(movie_response_model, code=200)
