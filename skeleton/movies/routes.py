@@ -1,7 +1,7 @@
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask_jwt_extended import jwt_required
 from flask_pydantic import validate
-from flask_restx import Resource, Namespace
+from flask_restx import Resource, Namespace, marshal
 
 from skeleton import db
 from skeleton.movies.api_model import movie_response_model, director_response_model, movie_request_model
@@ -15,15 +15,16 @@ api = Namespace('Movies', description='CRUD Movies', path='/')
 class MoviesREST(Resource):
 
     @api.marshal_list_with(movie_response_model, code=200)
-    # @jwt_required()
+    @jwt_required()
     def get(self):
         movies = Movies.query.limit(5).all()
         return movies
 
     # @api.marshal_with(book_model, code=201)
     @api.expect(movie_request_model)
+    @api.response(201, 'Created')
     @validate()
-    # @jwt_required()
+    @jwt_required()
     def post(self, body: MovieRequestModel):
         new_movie = Movies(
             original_title=body.original_title,
@@ -43,20 +44,21 @@ class MoviesREST(Resource):
         db.session.add(new_movie)
         db.session.commit()
 
-        return jsonify({'msg': 'New movie has been created'})
+        return make_response(jsonify({'msg': f"New movie with id {new_movie.id} has been created"}), 201)
 
 
 @api.route('/movie/<int:id>')
 class MovieREST(Resource):
 
-    @api.marshal_with(movie_response_model, code=200, envelope="book")
-    # @jwt_required()
+    # @api.marshal_with(movie_response_model, code=200)
+    @api.response(movie_response_model, 200)
+    @jwt_required()
     def get(self, id):
         movie = Movies.query.get_or_404(id)
-        return movie
+        return marshal(movie, movie_response_model)
 
     @api.expect(movie_request_model)
-    # @jwt_required()
+    @jwt_required()
     @validate()
     def put(self, id, body: MovieRequestModel):
         movie_to_update = Movies.query.get_or_404(id)
@@ -78,10 +80,11 @@ class MovieREST(Resource):
 
         return jsonify(msg='Update success')
 
-    @api.marshal_with(movie_response_model, code=200)
-    # @jwt_required()
+    # @api.marshal_with(movie_response_model, code=200)
+    # @api.response(movie_response_model, code=200)
+    @jwt_required()
     def delete(self, id):
         movie_to_delete = Movies.query.get_or_404(id)
         db.session.delete(movie_to_delete)
         db.session.commit()
-        return movie_to_delete
+        return jsonify(msg='Delete success')

@@ -36,6 +36,7 @@ class Login(Resource):
 
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
+
         token = Tokenlist(jti=get_jti(access_token), refresh_token=refresh_token, used=False)
 
         db.session.add(token)
@@ -80,17 +81,23 @@ class RefreshToken(Resource):
         jti = decoded_access_token['jti']
 
         result = Tokenlist.query.filter_by(jti=jti).first()
-        if result and result.used:
-            return make_response(jsonify(msg='Refresh Token already used'), 400)
 
-        result.used = True
+        if result:
+            if result.used:
+                return make_response(jsonify(msg='Refresh Token already used'), 400)
+            elif result.refresh_token != refresh_token:
+                return make_response(jsonify(msg='Access Token and Refresh Token doesnt Match'), 400)
+            else:
+                result.used = True
 
-        new_access_token = create_access_token(identity=identity)
-        new_refresh_token = create_refresh_token(identity=identity)
+                new_access_token = create_access_token(identity=identity)
+                new_refresh_token = create_refresh_token(identity=identity)
 
-        token = Tokenlist(jti=get_jti(new_access_token), refresh_token=new_refresh_token, used=False)
+                token = Tokenlist(jti=get_jti(new_access_token), refresh_token=new_refresh_token, used=False)
 
-        db.session.add(token)
-        db.session.commit()
+                db.session.add(token)
+                db.session.commit()
 
-        return jsonify(access_token=new_access_token, refresh_token=new_refresh_token)
+                return jsonify(access_token=new_access_token, refresh_token=new_refresh_token)
+        else:
+            return make_response(jsonify(msg='Access Token not found'), 400)
