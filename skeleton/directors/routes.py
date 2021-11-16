@@ -4,76 +4,62 @@ from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
 
 from skeleton import db
-from skeleton.movies.api_model import movie_response_model, director_response_model, movie_request_model
-from skeleton.movies.model import Movies
-from skeleton.movies.pydantic_model import MovieRequestModel
+from skeleton.shared.api_model import director_request_model, director_response_model
+from skeleton.directors.model import Directors
+from skeleton.directors.pydantic_model import DirectorRequestModel
 
-api = Namespace('Movies', description='CRUD Movies', path='/')
+api = Namespace('Directors', description='CRUD Directors', path='/')
 
 
-@api.route('/movie')
-class MoviesREST(Resource):
+@api.route('/director')
+class DirectorsREST(Resource):
 
-    @api.marshal_list_with(movie_response_model, code=200)
+    @api.marshal_list_with(director_response_model, code=200)
     @jwt_required()
     def get(self):
-        movies = Movies.query.limit(5).all()
-        return movies
+        directors = Directors.query.limit(5).all()
+        return directors
 
     # @api.marshal_with(book_model, code=201)
-    @api.expect(movie_request_model)
+    @api.expect(director_request_model)
     @api.response(201, 'Created')
     @validate()
     @jwt_required()
-    def post(self, body: MovieRequestModel):
-        new_movie = Movies(
-            original_title=body.original_title,
-            budget=body.budget,
-            popularity=body.popularity,
-            release_date=body.release_date,
-            revenue=body.revenue,
-            title=body.title,
-            vote_average=body.vote_average,
-            vote_count=body.vote_count,
-            overview=body.overview,
-            tagline=body.tagline,
+    def post(self, body: DirectorRequestModel):
+        print(body.name)
+        new_director = Directors(
+            name=body.name,
+            gender=body.gender,
             uid=body.uid,
-            director_id=body.director_id
+            department=body.department
         )
 
-        db.session.add(new_movie)
+        db.session.add(new_director)
         db.session.commit()
 
-        return make_response(jsonify({'msg': f"New movie with id {new_movie.id} has been created"}), 201)
+        return make_response(jsonify({'msg': f"New director with id {new_director.id} has been created"}), 201)
 
-@api.route('/movie/<int:id>')
-class MovieREST(Resource):
+
+@api.route('/director/<int:id>')
+class DirectorREST(Resource):
 
     # @api.marshal_with(movie_response_model, code=200)
-    @api.response(movie_response_model, 200)
+    @api.response(200, model=director_response_model, description='Success')
     @jwt_required()
     def get(self, id):
-        movie = Movies.query.get_or_404(id)
-        return marshal(movie, movie_response_model)
+        director = Directors.query.get_or_404(id)
+        return marshal(director, director_response_model)
 
-    @api.expect(movie_request_model)
+    @api.expect(director_request_model)
     @jwt_required()
     @validate()
-    def put(self, id, body: MovieRequestModel):
-        movie_to_update = Movies.query.get_or_404(id)
+    def put(self, id, body: DirectorRequestModel):
+        director_to_update = Directors.query.get_or_404(id)
 
-        movie_to_update.original_title = body.original_title
-        movie_to_update.budget = body.budget
-        movie_to_update.popularity = body.popularity
-        movie_to_update.release_date = body.release_date
-        movie_to_update.revenue = body.revenue
-        movie_to_update.title = body.title
-        movie_to_update.vote_average = body.vote_average
-        movie_to_update.vote_count = body.vote_count
-        movie_to_update.overview = body.overview
-        movie_to_update.tagline = body.tagline
-        movie_to_update.uid = body.uid
-        movie_to_update.director_id = body.director_id
+        director_to_update.name = body.name
+        director_to_update.gender = body.gender
+        director_to_update.uid = body.uid
+        director_to_update.department = body.department
 
         db.session.commit()
 
@@ -83,8 +69,7 @@ class MovieREST(Resource):
     # @api.response(movie_response_model, code=200)
     @jwt_required()
     def delete(self, id):
-        movie_to_delete = Movies.query.get_or_404(id)
-        db.session.delete(movie_to_delete)
+        director_to_delete = Directors.query.get_or_404(id)
+        db.session.delete(director_to_delete)
         db.session.commit()
         return jsonify(msg='Delete success')
-

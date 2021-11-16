@@ -4,7 +4,7 @@ from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
 
 from skeleton import db
-from skeleton.movies.api_model import movie_response_model, director_response_model, movie_request_model
+from skeleton.shared.api_model import movie_response_model, movie_request_model
 from skeleton.movies.model import Movies
 from skeleton.movies.pydantic_model import MovieRequestModel
 
@@ -51,7 +51,7 @@ class MoviesREST(Resource):
 class MovieREST(Resource):
 
     # @api.marshal_with(movie_response_model, code=200)
-    @api.response(movie_response_model, 200)
+    @api.response(200, model=movie_response_model, description='Success')
     @jwt_required()
     def get(self, id):
         movie = Movies.query.get_or_404(id)
