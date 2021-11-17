@@ -45,10 +45,14 @@ class Register(Resource):
         username = body.username
         password = body.password
 
-        user = User.query.filter_by(email=email).first()
+        user_by_email = User.query.filter_by(email=email).first()
+        user_by_name = User.query.filter_by(username=username).first()
 
-        if user:
+        if user_by_email:
             return make_response(jsonify({'msg': f"Email {email} already exist in db"}), 400)
+
+        if user_by_name and user_by_name.username == username:
+            return make_response(jsonify({'msg': f"Username already exist in db"}), 400)
 
         new_user = User(email=email, username=username, password=generate_password_hash(password))
 
