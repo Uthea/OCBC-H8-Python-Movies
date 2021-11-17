@@ -48,6 +48,7 @@ class Login(Resource):
 @api.route('/register')
 class Register(Resource):
     @api.expect(register_model)
+    @api.response(201, description='Created')
     @validate()
     def post(self, body: RegisterBodyModel):
         """
