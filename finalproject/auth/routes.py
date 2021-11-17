@@ -17,6 +17,15 @@ class Login(Resource):
     @api.expect(login_model)
     @validate()
     def post(self, body: LoginBodyModel):
+        """
+        Return JWT keys in order to access movies and directors resource
+
+           Parameters:
+                   body (json): contains email and password (refer to pydantic model)
+           Returns:
+                   response (json): contains access_token and refresh_token with status code 200
+        """
+
         email = body.email
         password = body.password
 
@@ -41,6 +50,15 @@ class Register(Resource):
     @api.expect(register_model)
     @validate()
     def post(self, body: RegisterBodyModel):
+        """
+        Create new user in the database
+
+           Parameters:
+                   body (json): contains username,email and password (refer to pydantic model)
+           Returns:
+                   response (json): contains message and status code 201
+        """
+
         email = body.email
         username = body.username
         password = body.password
@@ -59,7 +77,7 @@ class Register(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({'msg': "Register Succeed !"})
+        return make_response(jsonify({'msg': "Register Succeed !"}), 201)
 
 
 @api.route('/refreshToken')
@@ -67,6 +85,15 @@ class RefreshToken(Resource):
     @api.expect(refresh_model)
     @validate()
     def post(self, body: RefreshBodyModel):
+        """
+        Generate new tokens using the previous jwt tokens
+
+           Parameters:
+                   body (json): contains access_token and refresh_token (refer to pydantic model)
+           Returns:
+                   response (json): contains new access and refresh token
+        """
+
         access_token = body.access_token
         refresh_token = body.refresh_token
 

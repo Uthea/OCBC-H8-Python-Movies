@@ -2,6 +2,10 @@ from sqlalchemy.orm import relationship
 
 from finalproject import db
 
+'''
+DB Model for Directors table
+'''
+
 
 class Directors(db.Model):
     __tablename__ = 'directors'

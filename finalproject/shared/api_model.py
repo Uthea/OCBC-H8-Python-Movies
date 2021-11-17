@@ -1,6 +1,10 @@
 from finalproject import api
 from flask_restx import fields
 
+'''
+shared api model for director and movie
+'''
+
 director_request_model = api.model(
     'Director Request',
     {

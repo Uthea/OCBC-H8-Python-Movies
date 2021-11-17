@@ -17,6 +17,15 @@ class DirectorsREST(Resource):
     @api.marshal_list_with(director_response_model, code=200)
     @jwt_required()
     def get(self):
+        """
+        Return list of directors
+
+           Parameters:
+                    None
+           Returns:
+                   response (json): list of directors (top 5) with status code 200
+        """
+
         directors = Directors.query.limit(5).all()
         return directors
 
@@ -25,7 +34,15 @@ class DirectorsREST(Resource):
     @validate()
     @jwt_required()
     def post(self, body: DirectorRequestModel):
-        print(body.name)
+        """
+        Insert new director
+
+           Parameters:
+                    body (json): director model (refer to pydantic/api model for list of keys)
+           Returns:
+                   response (json): a message with status code 201
+        """
+
         new_director = Directors(
             name=body.name,
             gender=body.gender,
@@ -45,6 +62,15 @@ class DirectorREST(Resource):
     @api.response(200, model=director_response_model, description='Success')
     @jwt_required()
     def get(self, id):
+        """
+        Return a director data based on id
+
+           Parameters:
+                    id (int): director id
+           Returns:
+                   response (json): director data (refer to pydantic/api model) with status code 200
+        """
+
         director = Directors.query.get_or_404(id)
         return marshal(director, director_response_model)
 
@@ -52,6 +78,16 @@ class DirectorREST(Resource):
     @jwt_required()
     @validate()
     def put(self, id, body: DirectorRequestModel):
+        """
+        Update a director based on id
+
+           Parameters:
+                    id (int) : director id
+                    body (json): director data (refer to pydantic/api model for list of keys)
+           Returns:
+                   response (json): a message with status code 200
+        """
+
         director_to_update = Directors.query.get_or_404(id)
 
         director_to_update.name = body.name
@@ -65,6 +101,15 @@ class DirectorREST(Resource):
 
     @jwt_required()
     def delete(self, id):
+        """
+        Delete a director based on id
+
+           Parameters:
+                    id (int): director id
+           Returns:
+                   response (json): a message with status code 200
+        """
+
         director_to_delete = Directors.query.get_or_404(id)
         db.session.delete(director_to_delete)
         db.session.commit()

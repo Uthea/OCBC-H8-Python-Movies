@@ -1,6 +1,10 @@
 from finalproject import api
 from flask_restx import fields
 
+'''
+Model for marshalling and swagger docs
+'''
+
 login_model = api.model(
     'Login',
     {

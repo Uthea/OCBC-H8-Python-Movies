@@ -2,13 +2,17 @@ import os
 from datetime import timedelta
 from os.path import dirname
 
+'''
+This file contains all the flask config parameters
+'''
+
 basedir = os.path.dirname(os.path.realpath(__file__))
 
 
 def get_db_url():
     db_url = os.getenv('DATABASE_URL')
     if db_url:
-        return db_url.replace("postgres", "postgresql")
+        return db_url.replace("postgres", "postgresql")  # heroku prefix db url with postgres instead of postgresql
 
     return db_url
 

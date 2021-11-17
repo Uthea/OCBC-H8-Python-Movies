@@ -18,6 +18,15 @@ class MoviesREST(Resource):
     @api.marshal_list_with(movie_response_model, code=200)
     @jwt_required()
     def get(self):
+        """
+        Return list of movies
+
+           Parameters:
+                    None
+           Returns:
+                   response (json): list of movies (top 5) with status code 200
+        """
+
         movies = Movies.query.limit(5).all()
         return movies
 
@@ -26,6 +35,14 @@ class MoviesREST(Resource):
     @validate()
     @jwt_required()
     def post(self, body: MovieRequestModel):
+        """
+        Insert new movie
+
+           Parameters:
+                    body (json): movie model (refer to pydantic/api model for list of keys)
+           Returns:
+                   response (json): a message with status code 201
+        """
 
         new_movie = Movies(
             original_title=body.original_title,
@@ -57,6 +74,15 @@ class MovieREST(Resource):
     @api.response(200, model=movie_response_model, description='Success')
     @jwt_required()
     def get(self, id):
+        """
+        Return a movie data based on id
+
+           Parameters:
+                    id (int): movie id
+           Returns:
+                   response (json): director data (refer to pydantic/api model) with status code 200
+        """
+
         movie = Movies.query.get_or_404(id)
         return marshal(movie, movie_response_model)
 
@@ -64,6 +90,16 @@ class MovieREST(Resource):
     @jwt_required()
     @validate()
     def put(self, id, body: MovieRequestModel):
+        """
+        Update a movie based on id
+
+           Parameters:
+                    id (int) : movie id
+                    body (json): movie data (refer to pydantic/api model for list of keys)
+           Returns:
+                   response (json): a message with status code 200
+        """
+
         movie_to_update = Movies.query.get_or_404(id)
 
         movie_to_update.original_title = body.original_title
@@ -88,6 +124,14 @@ class MovieREST(Resource):
 
     @jwt_required()
     def delete(self, id):
+        """
+        Delete a movie based on id
+
+           Parameters:
+                    id (int): movie id
+           Returns:
+                   response (json): a message with status code 200
+        """
         movie_to_delete = Movies.query.get_or_404(id)
         db.session.delete(movie_to_delete)
         db.session.commit()
