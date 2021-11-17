@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey
-
-from finalproject import db, app
 from sqlalchemy.orm import relationship
+
+from finalproject import db
 
 
 class Movies(db.Model):

@@ -1,13 +1,13 @@
-from flask import jsonify, request, make_response
+from flask import jsonify, make_response
 from flask_jwt_extended import jwt_required
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
 from sqlalchemy.exc import IntegrityError
 
 from finalproject import db
-from finalproject.shared.api_model import movie_response_model, movie_request_model
 from finalproject.movies.model import Movies
 from finalproject.movies.pydantic_model import MovieRequestModel
+from finalproject.shared.api_model import movie_response_model, movie_request_model
 
 api = Namespace('Movies', description='CRUD Movies', path='/')
 
@@ -21,7 +21,6 @@ class MoviesREST(Resource):
         movies = Movies.query.limit(5).all()
         return movies
 
-    # @api.marshal_with(book_model, code=201)
     @api.expect(movie_request_model)
     @api.response(201, 'Created')
     @validate()
@@ -55,7 +54,6 @@ class MoviesREST(Resource):
 @api.route('/movies/<int:id>')
 class MovieREST(Resource):
 
-    # @api.marshal_with(movie_response_model, code=200)
     @api.response(200, model=movie_response_model, description='Success')
     @jwt_required()
     def get(self, id):
@@ -88,8 +86,6 @@ class MovieREST(Resource):
 
         return jsonify(msg='Update success')
 
-    # @api.marshal_with(movie_response_model, code=200)
-    # @api.response(movie_response_model, code=200)
     @jwt_required()
     def delete(self, id):
         movie_to_delete = Movies.query.get_or_404(id)

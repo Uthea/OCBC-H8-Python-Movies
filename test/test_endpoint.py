@@ -1,11 +1,17 @@
 import flask_unittest
-from finalproject import app
 import json
-
+import os
 from unittest import mock
+
+basedir = os.path.dirname(os.path.realpath(__file__))
+db_url = 'sqlite:///' + os.path.join(basedir, 'test.db')
+
+with mock.patch.dict(os.environ, {'FLASK_ENV': 'test', 'DATABASE_URL': db_url}):
+    from finalproject import app
 
 
 class TestEndpoint(flask_unittest.ClientTestCase):
+
     app = app
 
     @mock.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')

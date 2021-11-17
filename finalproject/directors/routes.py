@@ -1,12 +1,12 @@
-from flask import jsonify, request, make_response
+from flask import jsonify, make_response
 from flask_jwt_extended import jwt_required
 from flask_pydantic import validate
 from flask_restx import Resource, Namespace, marshal
 
 from finalproject import db
-from finalproject.shared.api_model import director_request_model, director_response_model
 from finalproject.directors.model import Directors
 from finalproject.directors.pydantic_model import DirectorRequestModel
+from finalproject.shared.api_model import director_request_model, director_response_model
 
 api = Namespace('Directors', description='CRUD Directors', path='/')
 
@@ -20,7 +20,6 @@ class DirectorsREST(Resource):
         directors = Directors.query.limit(5).all()
         return directors
 
-    # @api.marshal_with(book_model, code=201)
     @api.expect(director_request_model)
     @api.response(201, 'Created')
     @validate()
@@ -43,7 +42,6 @@ class DirectorsREST(Resource):
 @api.route('/directors/<int:id>')
 class DirectorREST(Resource):
 
-    # @api.marshal_with(movie_response_model, code=200)
     @api.response(200, model=director_response_model, description='Success')
     @jwt_required()
     def get(self, id):
@@ -65,8 +63,6 @@ class DirectorREST(Resource):
 
         return jsonify(msg='Update success')
 
-    # @api.marshal_with(movie_response_model, code=200)
-    # @api.response(movie_response_model, code=200)
     @jwt_required()
     def delete(self, id):
         director_to_delete = Directors.query.get_or_404(id)

@@ -23,6 +23,10 @@ class BaseConfig(object):
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
 
+class TestConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = get_db_url()
+
+
 class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = get_db_url()
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
